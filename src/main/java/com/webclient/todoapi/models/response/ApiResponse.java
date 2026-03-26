@@ -1,7 +1,8 @@
-package com.webclient.todoapi.models;
+package com.webclient.todoapi.models.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.webclient.todoapi.models.TodoData;
 import lombok.Data;
 
 @Data
