@@ -5,6 +5,7 @@ import com.webclient.todoapi.models.TodoData;
 import com.webclient.todoapi.models.UserDetails;
 import com.webclient.todoapi.models.request.TodoRequest;
 import com.webclient.todoapi.models.response.ApiResponse;
+import com.webclient.todoapi.exceptions.TodoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,35 +20,43 @@ public class TodoService {
     private WebClient webClient;
 
     public ApiResponse getTodos(TodoRequest request){
+        try{
+            String url;
 
-        String url;
+            if (request.getUserId() ==null){
+                url = "https://jsonplaceholder.typicode.com/todos";
+            } else {
+                url = "https://jsonplaceholder.typicode.com/todos?userId=" + request.getUserId();
+            }
 
-        if (request.getUserId() ==null){
-            url = "https://jsonplaceholder.typicode.com/todos";
-        } else {
-            url = "https://jsonplaceholder.typicode.com/todos?userId=" + request.getUserId();
+            Todo[] todos =  webClient.get().uri(url).retrieve().bodyToMono(Todo[].class).block();
+
+            if (todos == null|| todos.length == 0){
+                throw new TodoException("No todos found for this user");
+            }
+
+            List<UserDetails> userDetailsList = mapTodosToUserDetails(todos);
+
+            return buildResponse(userDetailsList);
+        }catch (Exception e){
+
+            throw new TodoException(e.getMessage());
         }
-
-        Todo[] todos =  webClient.get().uri(url).retrieve().bodyToMono(Todo[].class).block();
-
-        List<UserDetails> userDetailsList = mapTodosToUserDetails(todos);
-
-        return buildResponse(userDetailsList);
     }
 
-    private List<UserDetails> mapTodosToUserDetails(Todo[] todos) {
+        private List<UserDetails> mapTodosToUserDetails(Todo[] todos) {
 
-        List<UserDetails> userList =new ArrayList<>();
+            List<UserDetails> userList =new ArrayList<>();
 
-        for (Todo todo : todos){
-            UserDetails user = new UserDetails();
-            user.setUser_id(todo.getUserId());
-            user.setDescription(todo.getTitle());
-            user.setStatus(todo.isCompleted() ? "ACTIVE" : "INACTIVE");
-            userList.add(user);
-        }
+            for (Todo todo : todos){
+                UserDetails user = new UserDetails();
+                user.setUser_id(todo.getUserId());
+                user.setDescription(todo.getTitle());
+                user.setStatus(todo.isCompleted() ? "ACTIVE" : "INACTIVE");
+                userList.add(user);
+            }
 
-        return userList;
+            return userList;
     }
 
     private ApiResponse buildResponse(List<UserDetails> userDetailsList) {
