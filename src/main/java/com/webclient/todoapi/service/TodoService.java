@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,15 +37,17 @@ public class TodoService {
 
     private List<UserDetails> mapTodosToUserDetails(Todo[] todos) {
 
-        return Arrays.stream(todos)
-                .map(todo -> {
-                    UserDetails user = new UserDetails();
-                    user.setUser_id(todo.getUserId());
-                    user.setDescription(todo.getTitle());
-                    user.setStatus(todo.isCompleted() ? "ACTIVE" : "INACTIVE");
-                    return user;
-                })
-                .toList();
+        List<UserDetails> userList =new ArrayList<>();
+
+        for (Todo todo : todos){
+            UserDetails user = new UserDetails();
+            user.setUser_id(todo.getUserId());
+            user.setDescription(todo.getTitle());
+            user.setStatus(todo.isCompleted() ? "ACTIVE" : "INACTIVE");
+            userList.add(user);
+        }
+
+        return userList;
     }
 
     private ApiResponse buildResponse(List<UserDetails> userDetailsList) {

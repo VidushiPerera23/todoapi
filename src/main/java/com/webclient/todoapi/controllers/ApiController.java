@@ -1,6 +1,5 @@
 package com.webclient.todoapi.controllers;
 
-import com.webclient.todoapi.models.TodoData;
 import com.webclient.todoapi.models.request.TodoRequest;
 import com.webclient.todoapi.models.response.ApiResponse;
 import com.webclient.todoapi.service.TodoService;
