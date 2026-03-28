@@ -21,7 +21,7 @@ public class TodoService {
 
     public ApiResponse getTodos(TodoRequest request){
         try{
-            String url;
+            String url; //
 
             if (request.getUserId() ==null){
                 url = "https://jsonplaceholder.typicode.com/todos";
@@ -67,7 +67,7 @@ public class TodoService {
         ApiResponse response = new ApiResponse();
         response.setCode("0000");
         response.setTitle("SUCCESS");
-        response.setMessage("");
+        response.setMessage("To do fetch Successfully");
         response.setData(todoData);
 
         return response;
